@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+      <!-- Einbinden des Kopfbereichs -->
+      <%- include ('part/head') %>
+    </head>
+
+    <body>
+      <!-- Einbinden der Navigationsleiste -->
+      <%- include ('part/nav') %>
+      <div class="mainContent">
+        <div class="mainLeft">
+          <p id="listName">
+            <%= pageName %> <!-- Dynamischer Seitenname -->
+          </p>
+          <div class="list">
+            <!-- Überprüfen, ob Einträge existieren -->
+            <% if (posts && posts.length > 0) { %>
+              <% posts.forEach(element => { %>
+                <div class="card" style="width: 18rem;">
+                  <!-- Auflisten der Eigenschaften des Artikels -->
+                  <ul class="list-group list-group-flush">
+                    <li class="list-group-item">Id: <%= element.id %></li>
+                    <li class="list-group-item">Artikelnummer: <%= element.articlenumber %></li>
+                    <li class="list-group-item">Titel: <%= element.title %></li>
+                    <li class="list-group-item">Beschreibung: <%= element.description %></li>
+                    <li class="list-group-item">Anzahl: <%= element.count %></li>
+                    <li class="list-group-item">Benutzer-Id: <%= element.userid %></li>
+                  </ul>
+                  <!-- Formular zum Löschen eines Artikels -->
+                  <form class="form-inline my-2" action="/equipment/delete/<%=element.id%>">
+                    <button 
+                      class="btn btn-outline-success my-2 my-sm-0" 
+                      id="buttonLöschen"
+                      type="submit"
+                    >
+                      Löschen
+                    </button>
+                  </form>
+                  <!-- Formular zum Editieren eines Artikels -->
+                  <form class="form-inline my-2" action="edit/<%=element.id%>">
+                    <button 
+                      type="button" 
+                      class="btn btn-outline-success my-2 my-sm-0"
+                      id="buttonChange"
+                      onclick="openEditModal('<%= element.id %>', '<%= element.articlenumber %>', '<%= element.title %>', '<%= element.description %>', '<%= element.count %>', '<%= element.userid %>')"
+                    >
+                      Editieren
+                    </button>
+                  </form>
+                </div>
+              <% }); %>
+            <% } else { %>
+              <!-- Nachricht bei fehlenden Daten -->
+              <p>No data found for the given ID.</p>
+            <% } %>
+          </div>
+
+        </div>
+        <div class="mainRight">
+          <!-- Suchformular für Artikel -->
+          <form class="form-inline my-2" id="searchForm">
+            <label for="searchId"></label>
+            <input class="form-control mr-sm-2" type="number" placeholder="Artikel-Id" aria-label="Search" id="searchId" required>
+            <button class="btn btn-outline-success my-2 my-sm-0" type="submit" id="buttonTop">Suchen</button>
+          </form>
+          <div class="NEW">
+            <div class="newButtonWhole">
+              <!-- Bereich zum Erstellen eines neuen Artikels -->
+              <p id="titleNew">Erstelle neuen <%=pageName%></p>
+            </div>
+            <div id="contentNew">
+              <div class="listNewPost">
+                <!-- Formular zum Erstellen eines neuen Artikels -->
+                <form id="newItemForm" action="/equipment/post" method="post">
+                  <label for="articlenumber">Artikelnummer</label>
+                  <input type="number" id="articlenumber" name="articlenumber" placeholder="Artikelnummer" required>
+
+                  <label for="title">Titel</label>
+                  <input type="text" id="title" name="title" placeholder="Titel" required>
+
+                  <label for="description">Beschreibung</label>
+                  <input type="text" id="description" name="description" placeholder="Beschreibung" required>
+
+                  <label for="count">Anzahl</label>
+                  <input type="number" id="count" name="count" placeholder="Anzahl" required>
+
+                  <label for="userid">Benutzer-Id</label>
+                  <input type="number" id="userid" name="userid" placeholder="Benutzer-Id" required>
+
+                  <button class="btn btn-outline-success my-2" id="buttonCreate" type="submit">Erstellen</button>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Modal zum Bearbeiten eines Artikels -->
+      <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="editModalLabel">Edit Item</h5>
+            </div>
+            <div class="modal-body">
+              <form id="editForm">
+                <!-- Verstecktes Feld für die Artikel-ID -->
+                <input type="hidden" id="editId">
+                <div class="form-group">
+                  <label for="editArticlenumber">Artikelnummer</label>
+                  <input type="text" class="form-control" id="editArticlenumber" required>
+                </div>
+                <div class="form-group">
+                  <label for="editTitle">Titel</label>
+                  <input type="text" class="form-control" id="editTitle" required>
+                </div>
+                <div class="form-group">
+                  <label for="editDescription">Beschreibung</label>
+                  <input type="text" class="form-control" id="editDescription" required>
+                </div>
+                <div class="form-group">
+                  <label for="editCount">Anzahl</label>
+                  <input type="number" class="form-control" id="editCount" required>
+                </div>
+                <div class="form-group">
+                  <label for="editUserid">Benutzer-Id</label>
+                  <input type="text" class="form-control" id="editUserid" required>
+                </div>
+                <div class="modal-footer" id="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-dismiss="modal" id="modalCloseButton">Schließen</button>
+                  <button type="submit" class="btn btn-outline-success my-2 my-sm-0" id="saveChanges">Änderung speichern</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <script>
+        // Funktion zum Öffnen des Editier-Dialogs mit vorgefüllten Daten
+        function openEditModal(id, articlenumber, title, description, count, userid) {
+          document.getElementById('editId').value = id;
+          document.getElementById('editArticlenumber').value = articlenumber;
+          document.getElementById('editTitle').value = title;
+          document.getElementById('editDescription').value = description;
+          document.getElementById('editCount').value = count;
+          document.getElementById('editUserid').value = userid;
+          document.getElementById('editModalLabel').textContent = `Edit Item ${id}`;
+          $('#editModal').modal('show');
+        }
+
+        // Eventlistener für das Editierformular
+        document.getElementById('editForm').addEventListener('submit', async function (event) {
+          event.preventDefault();
+
+          // Sammeln der Formulardaten
+          const formData = {
+            id: document.getElementById('editId').value,
+            articlenumber: document.getElementById('editArticlenumber').value,
+            title: document.getElementById('editTitle').value,
+            description: document.getElementById('editDescription').value,
+            count: document.getElementById('editCount').value,
+            userid: document.getElementById('editUserid').value
+          };
+
+          console.log('Sending update data:', formData);
+
+          try {
+            const response = await fetch('/equipment/update', { 
+              method: 'PUT',
+              headers: {
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify(formData)
+            });
+
+            if (response.ok) {
+              alert('Item updated successfully!');
+              $('#editModal').modal('hide');
+              location.reload(); 
+            } else {
+              const result = await response.json();
+              alert(result.data ? result.data : result);
+            }
+          } catch (error) {
+            console.error('Error:', error);
+            alert('An error occurred while updating the item.');
+          }
+        });
+
+        // Eventlistener zum Schließen des Modals
+        document.getElementById('modalCloseButton').addEventListener('click', function () {
+          $('#editModal').modal('hide');
+        });
+
+        // Eventlistener für das Suchformular
+        document.getElementById('searchForm').addEventListener('submit', async function (event) {
+          event.preventDefault();
+          const articleId = document.getElementById('searchId').value;
+          try {
+            const response = await fetch(`/equipment/id/${articleId}`);
+            if (!response.ok) {
+              alert('Artikel nicht gefunden!');
+              throw new Error('Network response was not ok');
+            }
+
+            const data = await response.json();
+            const list = document.querySelector('.list');
+            list.innerHTML = ''; // Liste leeren
+            const card = document.createElement('div');
+            card.className = 'card';
+            card.style.width = '18rem';
+            card.innerHTML = `
+              <ul class="list-group list-group-flush">
+                <li class="list-group-item">Id: ${data.id}</li>
+                <li class="list-group-item">Artikelnummer: ${data.articlenumber}</li>
+                <li class="list-group-item">Titel: ${data.title}</li>
+                <li class="list-group-item">Beschreibung: ${data.description}</li>
+                <li class="list-group-item">Anzahl: ${data.count}</li>
+                <li class="list-group-item">Benutzer-Id: ${data.userid}</li>
+              </ul>
+              <!-- Formular zum Löschen und Editieren des gefundenen Artikels -->
+              <form class="form-inline my-2" action="equipment/delete/${data.id}">
+                <button class="btn btn-outline-success my-2 my-sm-0" style="background-color :#b5c6b8;" type="submit">Löschen</button>
+              </form>
+              <form class="form-inline my-2" action="equipment/edit/${data.id}">
+                <button type="button" class="btn btn-outline-success my-2 my-sm-0" style="background-color :#b5c6b8;" onclick="openEditModal('${data.id}', '${data.username}', '${data.password}', '${data.email}', '${data.role}')">Editieren</button>
+              </form>
+            `;
+            list.appendChild(card);
+          } catch (error) {
+            console.error('Error fetching data:', error);
+            alert('Error: ' + error);
+          }
+        });
+
+        // Eventlistener für das Formular zum Erstellen eines neuen Artikels
+        document.getElementById('newItemForm').addEventListener('submit', async function(event) {
+          event.preventDefault(); // Standard-Formularaktion verhindern
+
+          // Formulardaten erfassen
+          const formData = {
+            articlenumber: document.getElementById('articlenumber').value,
+            title: document.getElementById('title').value,
+            description: document.getElementById('description').value,
+            count: document.getElementById('count').value,
+            userid: document.getElementById('userid').value
+          };
+
+          try {
+            const response = await fetch('/equipment/post', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify(formData)
+            });
+
+            // Antworten überprüfen und entsprechende Aktion ausführen
+            console.log('Response status:', response.status);
+            console.log('Response headers:', [...response.headers]);
+
+            if (response.ok) {
+              alert('Artikel wurde erfolgreich erstellt!');
+              location.reload();
+            } else {
+              const result = await response.json();
+              alert(result.data ? 'Error: ' + result.data : 'Error: ' + result);
+            }
+          } catch (error) {
+            console.error('Error:', error);
+            alert('An error occurred while creating the equipment.');
+          }
+        });
+    </script>
+
+    <!-- Einbinden des Fußbereichs -->
+    <%- include ('part/footer') %>
+  </body>
+</html>

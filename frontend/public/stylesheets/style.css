@@ -1,0 +1,264 @@
+:root {
+  --bs-body-bg: #e4e8f4;
+}
+
+body {
+  font: 0.875em "Lucida Grande", Helvetica, Arial, sans-serif;
+  background-color: #e4e8f4;
+  min-height: 100vh;
+}
+
+/*navbar*/
+
+.container-fluid { /*problem: weißer rand? soll weg*/
+  background-image: url("./images/R.jpg");
+  font-size: 1.125em;
+}   
+
+.searchMenu {
+  display: flex;
+}
+
+#buttonTop {
+  background-color: #b5c6b8;
+}
+
+.form-inline { /*suche und button*/
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding-right: 25em; 
+}
+
+.navBarWhole {
+  opacity: 0.3;
+}
+
+.navbar {
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+@media (min-width: 992px) {
+  .navbar-expand-lg {
+    justify-content: space-between;
+  }
+}
+
+.navbar-nav {
+  margin-right: 3em;
+  padding: 1.5em;
+  background-color: #b5c6b8;
+  border-radius: 0.938em; 
+}
+
+.navbar-toggler {
+  background-color:#b5c6b8;
+}
+
+#headLogo {
+ width: 15em;
+ height: auto;
+ display: block;
+ margin-right: 2em;
+}
+
+/*main content*/
+.mainContent {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+  padding: 1rem;
+}
+
+@media (min-width: 1100px) {
+  .mainContent {
+    grid-template-columns: 3fr 1fr;
+    gap: 3rem;
+    padding: 3rem;
+  }
+}
+
+.mainLeft, .mainRight {
+  flex-basis: 50%;
+  flex-grow: 1;
+  max-width: 90vw;
+}
+
+.mainLeft {
+  max-height: 50em; /* Adjust this value as needed */
+  overflow-y: auto;  /* Enables vertical scrolling */
+  padding: 1rem;
+  background-color: #8fa2ca;
+  border-radius: 0.938em; 
+  display: flex;
+  flex-direction: column;
+}
+
+#listName {
+  background-color:#b5c6b8;
+  font-size: 1.125em;
+  font-weight: bold;
+  border-radius: 0.938em; 
+  padding: 1em;
+}
+
+.mainLeft .list {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.mainLeft .card {
+  background-color:#e4e8f4;
+  min-width: auto;
+  border-radius: 0.938em;
+  padding: 1em;
+}
+
+.list li {
+  padding-bottom: 1em;
+  padding-top: 1em;
+}
+
+.mainRight {
+  background-color: #e4e8f4;
+  border-radius: 0.938em; 
+}
+
+.NEW {
+  background-color: #8fa2ca;
+  padding-left: 2em;
+  padding-right: 2em;
+  padding-top: 1em;
+  padding-bottom: 1em;
+  border-radius: 0.938em;
+}
+
+#buttonCreate, #buttonLöschen, #buttonChange {
+  background-color: #b5c6b8;
+}
+
+#titleDel, #titleEd, #titleNew {
+  background-color: #b5c6b8;
+  border-radius: 0.938em;
+  width: 70%;
+  padding: 1em;
+  font-size: 1.125em;
+  font-weight: bold;
+}
+
+#edButton, #delButton, #newButton {
+  background-color: #b5c6b8;
+}
+
+#contentEd, #contentNew {
+  background-color: #e4e8f4;
+  border-radius: 0.938em;
+  padding: 1em;
+  padding-top: 2em;
+  margin-top: 1em;
+  margin-bottom: 1em;
+}
+
+.contentDel p {
+  display: flex;
+  align-content: center;
+}
+
+#buttonDelete {
+  padding-bottom: 1em;
+}
+
+#edFeld, #newFeld, #delFeld {
+  width: 130px;
+}
+
+#searchForm {
+  padding-bottom: 1em;
+}
+
+#newItemForm {
+  display: flex;
+  flex-direction: column;
+}
+
+#newItemForm label {
+  font-size: 1.125em;
+  margin-bottom: 0.5em;
+}
+
+#newItemForm input {
+  margin-bottom: 2em;
+}
+
+
+
+/*footer*/
+
+.d-flex, .footerWhole {
+  background-color: #8fa2ca;
+  padding: 3em;
+
+}
+
+.me-5 { /*finde uns auf...*/
+  font-size: 15px;
+  font-size: 1.15em;
+}
+
+.col-md-4 { 
+  padding-bottom: -5em;
+}
+
+#saveChanges {
+  background-color: #b5c6b8;
+}
+
+.container { 
+  text-align: center; 
+  }
+
+/* Bildcontainer */
+.home-image-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 2em;
+  margin-bottom: 2em;
+}
+
+/* Bild selbst */
+.home-image {
+  max-width: 100%;
+  height: auto;
+  border-radius: 0.938em; /* Fügt abgerundete Ecken hinzu */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Fügt einen Schatten hinzu */
+  transition: transform 0.3s ease; /* Smooth Zoom-Effekt bei Hover */
+}
+
+.home-image:hover {
+  transform: scale(1.05); /* Leichter Zoom-Effekt beim Hover */
+}
+
+.icon {
+  width: 2em;
+  height: 2em;
+}
+
+.navbar-toggler-icon {
+  color: #8fa2ca;
+}
+
+.form-control, .list-group-item {
+  background-color: #fff !important;
+  min-width: 20ch;
+}
+
+.footerWhole .card {
+  background-color: #b5c6b8;
+  border-radius: 0.938em;
+  padding: 1em;
+  border: 0;
+  margin-bottom: 0;
+}

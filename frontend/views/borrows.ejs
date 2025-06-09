@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+    <!-- Einbinden des Kopfbereichs -->
+    <%- include ('part/head') %>
+    <body>
+        <!-- Einbinden der Navigationsleiste -->
+        <%- include ('part/nav') %>
+        <div class="mainContent">
+            <div class="mainLeft">
+                <p id="listName">
+                    <%=pageName%> <!-- Name der Seite, dynamisch eingefügt -->
+                </p>
+                <div class="list">
+                    <!-- Überprüfung, ob 'posts' existieren und ob sie nicht leer sind -->
+                    <% if (posts && posts.length > 0) { %>
+                    <% posts.forEach(element => { %>
+                        <div class="card" style="width: 18rem;">
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item">Id: <%= element.id %></li>
+                                <li class="list-group-item">Benutzer Id: <%= element.userid %></li>
+                                <li class="list-group-item">Equipment Id's: <%= element.equipmentids %></li>
+                                <li class="list-group-item">Startdatum: <%= element.start %></li>
+                                <li class="list-group-item">Enddatum: <%= element.end %></li>
+                            </ul>
+                            <!-- Formular zum Löschen eines Eintrags -->
+                            <form class="form-inline my-2" action="borrows/delete/<%=element.id%>">
+                                <button class="btn btn-outline-success my-2 my-sm-0" id="buttonLöschen"
+                                    type="submit">Löschen</button>
+                            </form>
+                            <!-- Formular zum Editieren eines Eintrags -->
+                            <form class="form-inline my-2" action="edit/<%=element.id%>">
+                                <button type="button" class="btn btn-outline-success my-2 my-sm-0" id="buttonChange"
+                                    onclick="openEditModal('<%= element.id %>', '<%= element.userid %>', '<%= element.equipmentids.join(', ') %>', '<%= element.start %>', '<%= element.end %>')">Editieren</button>
+                            </form>
+                        </div>
+                    <% }); %>
+                    <% } else { %>
+                        <!-- Nachricht, wenn keine Daten gefunden wurden -->
+                        <p>No data found for the given ID.</p>
+                    <% } %>
+                </div>
+            </div>
+            <div class="mainRight">
+                <div class="searchName">
+                    <!-- Formular für die Suche nach Ausleihvorgängen -->
+                    <form class="form-inline my-2 my-lg-0" id="searchForm">
+                        <label for="searchName"></label>
+                        <input class="form-control mr-sm-2" type="text" placeholder="Ausleihvorgang-Id"
+                            aria-label="Search" id="searchId" required style="width: 180px;">
+                        <button class="btn btn-outline-success my-2 my-sm-0" type="submit"
+                            id="buttonTop">Suchen</button>
+                    </form>
+                </div>
+                <div class="NEW">
+                    <div class="newButtonWhole">
+                        <p id="titleNew">Erstelle neue <%=pageName%> Nr: </p>
+                    </div>
+                    <div id="contentNew">
+                        <div class="listNewPost">
+                            <form id="newItemForm" action="borrows/post" method="post">
+                                <!-- Formularfelder zum Erstellen eines neuen Eintrags -->
+                                <label for="userid">Benutzer Id</label>
+                                <input type="text" id="userid" name="userid" placeholder="Benutzer Id" required>
+
+                                <label for="equipmentids">Equipment Id's</label>
+                                <input type="text" id="equipmentids" name="equipmentids" placeholder="Equipment Id's" required>
+                                
+                                <label for="start">Start Date</label>
+                                <input type="date" id="start" name="start" required>
+
+                                <label for="end">End Date</label>
+                                <input type="date" id="end" name="end" required>
+
+                                <button class="btn btn-outline-success my-2" id="buttonCreate"
+                                    type="submit">Erstellen</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Modalfenster zum Editieren eines Eintrags -->
+        <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="editModalLabel">Edit Borrow</h5>
+                    </div>
+                    <div class="modal-body">
+                        <form id="editForm">
+                            <input type="hidden" id="editId">
+                            <div class="form-group">
+                                <label for="editUserid">Benutzer Id</label>
+                                <input type="text" class="form-control" id="editUserid" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="editEquipmentids">Equipment Id's</label>
+                                <input type="text" class="form-control" id="editEquipmentids" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="editStart">Startdatum</label>
+                                <input type="date" class="form-control" id="editStart" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="editEnd">Enddatum</label>
+                                <input type="date" class="form-control" id="editEnd" required>
+                            </div>
+                            <div class="modal-footer" id="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal" id="modalCloseButton">Schließen</button>
+                                <button type="submit" class="btn btn-outline-success my-2 my-sm-0" id="saveChanges">Änderung speichern</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- JavaScript für das Öffnen und Bearbeiten von Einträgen -->
+        <script>
+            function openEditModal(id, userid, equipmentids, start, end) {
+                if (!Array.isArray(equipmentids)) {
+                    equipmentids = equipmentids.split(',').map(id => id.trim());
+                } 
+                document.getElementById('editId').value = id;
+                document.getElementById('editUserid').value = userid;
+                document.getElementById('editEquipmentids').value = equipmentids.join(', ');
+                document.getElementById('editStart').value = start;
+                document.getElementById('editEnd').value = end;
+                document.getElementById('editModalLabel').textContent = `Edit Borrow ${id}`;
+                $('#editModal').modal('show');
+            }
+
+            document.getElementById('editForm').addEventListener('submit', async function (event) {
+                event.preventDefault();
+
+                const formData = {
+                    id: document.getElementById('editId').value,
+                    userid: document.getElementById('editUserid').value,
+                    equipmentids: document.getElementById('editEquipmentids').value.split(',').map(e => e.trim()),
+                    start: document.getElementById('editStart').value,
+                    end: document.getElementById('editEnd').value
+                };
+
+                if (new Date(formData.start) > new Date(formData.end)) {
+                    alert('Enddatum muss nach Startdatum liegen');
+                    return;
+                }
+
+                console.log('Sending update data:', formData);
+
+                try {
+                    const response = await fetch('/borrows/update', {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(formData)
+                    });
+
+                    if (response.ok) {
+                        alert('Borrow updated successfully!');
+                        $('#editModal').modal('hide');
+                        location.reload(); 
+                    } else {
+                        const result = await response.json();
+                        alert('Error: ' + result.data);
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    alert('An error occurred while updating the borrow.');
+                }
+            });
+
+            document.getElementById('modalCloseButton').addEventListener('click', function () {
+                $('#editModal').modal('hide');
+            });
+
+            document.getElementById('searchForm').addEventListener('submit', function (event) {
+                event.preventDefault();
+                const borrowId = document.getElementById('searchId').value;
+                fetch(`/borrows/id/${borrowId}`)
+                    .then(response => {
+                        if (!response.ok) {
+                            alert('Vorgang nicht gefunden!')
+                            throw new Error('Network response was not ok');
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        const list = document.querySelector('.list');
+                        list.innerHTML = ''; // Liste leeren
+                        if (data) {
+                            const card = document.createElement('div');
+                            card.className = 'card';
+                            card.style.width = '18rem';
+                            card.innerHTML = `
+                                <ul class="list-group list-group-flush">
+                                    <li class="list-group-item">id: ${data.id}</li>
+                                    <li class="list-group-item">Benutzer-id: ${data.userid}</li>
+                                    <li class="list-group-item">Equipment Id's: ${data.equipmentids.join(', ')}</li>
+                                    <li class="list-group-item">Startdatum: ${data.start}</li>
+                                    <li class="list-group-item">Enddatum: ${data.end}</li>
+                                </ul>
+                                <form class="form-inline my-2 my-lg-0" action="borrows/delete/${data.id}">
+                                    <button class="btn btn-outline-success my-2 my-sm-0" style="background-color :#b5c6b8;" type="submit">Löschen</button>
+                                </form>
+                                <form class="form-inline my-2 my-lg-0" action="borrows/edit/${data.id}">
+                                    <button type="button" class="btn btn-outline-success my-2 my-sm-0" style="background-color :#b5c6b8;" onclick="openEditModal('${data.id}', '${data.userid}', '${data.equipmentids}', '${data.start}', '${data.end}')">Editieren</button>
+                                </form>
+                            `;
+                            list.appendChild(card);
+                        } else {
+                            list.innerHTML = '<p>No data found for the given user ID.</p>';
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error fetching data:', error);
+                    });
+            });
+
+            document.getElementById('newItemForm').addEventListener('submit', async function (event) {
+                event.preventDefault();
+
+                const formData2 = {
+                    userid: document.getElementById('userid').value,
+                    equipmentids: document.getElementById('equipmentids').value.split(',').map(id => parseInt(id.trim())),
+                    start: document.getElementById('start').value,
+                    end: document.getElementById('end').value,
+                };
+
+                if (new Date(formData2.start) > new Date(formData2.end)) {
+                    alert('Enddatum muss nach Startdatum liegen');
+                    return;
+                }
+
+                try {
+                    const response = await fetch('/borrows/post', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(formData2)
+                    });
+
+                    if (response.ok) {
+                        alert('Ausleihvorgang wurde erfolgreich erstellt!');
+                        location.reload(); 
+                    } else {
+                        const result = await response.json();
+                        alert('Error: ' + result);
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    alert('An error occurred while creating the borrow.');
+                }
+            });
+        </script>
+        <!-- Einbinden des Fußbereichs -->
+        <%- include ('part/footer') %>
+    </body>
+</html>
