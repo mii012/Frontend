@@ -1,3 +1,8 @@
-# Frontend
-<h2>group project in 1st semster - grade 1.3</h2>
-<p>backend was provided by professor seperately</p>
+## Frontend
+
+**Group project in the 1st semester (Grade: 1.3)**  
+
+- Developed a fully functional **frontend** for a **VHS shop** application  
+- Implemented core features such as **adding, deleting, and editing items**  
+- The **backend was provided separately** by the professor  
+
