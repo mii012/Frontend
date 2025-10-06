@@ -1,4 +1,4 @@
-## Frontend
+## Frontend (2024)
 
 **Group project in the 1st semester (Grade: 1.3)**  
 
